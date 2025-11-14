@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>一次性消息聊天室 - GitHub Pages版</title>
+    <title>多设备实时聊天</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
         
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #667eea, #764ba2);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -23,9 +23,9 @@
         
         .chat-container {
             width: 100%;
-            max-width: 450px;
+            max-width: 500px;
             height: 700px;
-            background-color: white;
+            background: white;
             border-radius: 16px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             display: flex;
@@ -40,7 +40,6 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
         
         .chat-title {
@@ -51,29 +50,6 @@
         .chat-subtitle {
             font-size: 14px;
             opacity: 0.9;
-            margin-top: 4px;
-        }
-        
-        .chat-icons {
-            display: flex;
-            gap: 15px;
-        }
-        
-        .icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background-color: rgba(255, 255, 255, 0.3);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .icon:hover {
-            background-color: rgba(255, 255, 255, 0.5);
-            transform: scale(1.1);
         }
         
         .chat-messages {
@@ -83,7 +59,7 @@
             display: flex;
             flex-direction: column;
             gap: 15px;
-            background-color: #f8f9fa;
+            background: #f8f9fa;
         }
         
         .message {
@@ -92,7 +68,6 @@
             border-radius: 18px;
             line-height: 1.4;
             position: relative;
-            word-wrap: break-word;
             animation: fadeIn 0.3s ease;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
         }
@@ -104,16 +79,14 @@
         
         .received {
             align-self: flex-start;
-            background-color: white;
+            background: white;
             border: 1px solid #e0e0e0;
-            border-top-left-radius: 5px;
         }
         
         .sent {
             align-self: flex-end;
             background: linear-gradient(135deg, #0084ff, #00c6ff);
             color: white;
-            border-top-right-radius: 5px;
         }
         
         .message-time {
@@ -127,17 +100,6 @@
             font-size: 12px;
             font-weight: bold;
             margin-bottom: 4px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .sender-you::after {
-            content: "(你)";
-            font-size: 10px;
-            background: rgba(255, 255, 255, 0.3);
-            padding: 1px 5px;
-            border-radius: 8px;
         }
         
         .chat-input-area {
@@ -145,7 +107,7 @@
             border-top: 1px solid #e0e0e0;
             display: flex;
             align-items: center;
-            background-color: white;
+            background: white;
         }
         
         .message-input {
@@ -153,7 +115,7 @@
             padding: 14px 18px;
             border: 1px solid #e0e0e0;
             border-radius: 24px;
-            background-color: #f8f9fa;
+            background: #f8f9fa;
             outline: none;
             font-size: 15px;
             transition: all 0.3s;
@@ -161,7 +123,7 @@
         
         .message-input:focus {
             border-color: #0084ff;
-            background-color: white;
+            background: white;
             box-shadow: 0 0 0 2px rgba(0, 132, 255, 0.1);
         }
         
@@ -190,7 +152,7 @@
         .send-button:disabled {
             background: #a0a0a0;
             cursor: not-allowed;
-            transform: scale(1);
+            transform: none;
             box-shadow: none;
         }
         
@@ -199,10 +161,8 @@
             color: #666;
             padding: 10px 20px;
             text-align: center;
-            background-color: #f8f9fa;
+            background: #f8f9fa;
             border-top: 1px solid #e0e0e0;
-            display: flex;
-            justify-content: space-between;
         }
         
         .info-box {
@@ -212,58 +172,6 @@
             margin: 15px;
             border-radius: 8px;
             font-size: 13px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-        }
-        
-        .clear-btn {
-            background: #ff4757;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 15px;
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .clear-btn:hover {
-            background: #ff3742;
-            transform: scale(1.05);
-        }
-        
-        /* 滚动条样式 */
-        .chat-messages::-webkit-scrollbar {
-            width: 6px;
-        }
-        
-        .chat-messages::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-        
-        .chat-messages::-webkit-scrollbar-thumb {
-            background: #c1c1c1;
-            border-radius: 10px;
-        }
-        
-        .chat-messages::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8;
-        }
-        
-        /* 响应式设计 */
-        @media (max-width: 480px) {
-            body {
-                padding: 10px;
-            }
-            
-            .chat-container {
-                height: 100vh;
-                border-radius: 0;
-            }
-            
-            .chat-header {
-                border-radius: 0;
-            }
         }
     </style>
 </head>
@@ -271,167 +179,64 @@
     <div class="chat-container">
         <div class="chat-header">
             <div>
-                <div class="chat-title">一次性消息聊天室</div>
-                <div class="chat-subtitle">消息在页面关闭后自动清除</div>
-            </div>
-            <div class="chat-icons">
-                <div class="icon" title="用户信息">👤</div>
-                <div class="icon" title="设置">⚙️</div>
+                <div class="chat-title">多设备实时聊天</div>
+                <div class="chat-subtitle">真正的跨设备通信</div>
             </div>
         </div>
         
         <div class="info-box">
-            💡 这是一个一次性消息聊天室。页面关闭后所有消息将自动清除。在同一浏览器的不同标签页中，消息会实时同步。
+            💡 这是一个真正的多设备实时聊天应用。使用Firebase实时数据库，所有消息将实时同步到所有设备。
         </div>
         
         <div class="chat-messages" id="chatMessages">
-            <!-- 消息将动态添加到这里 -->
+            <div class="message received">
+                <div class="message-sender">系统</div>
+                正在连接到实时聊天服务器...
+                <div class="message-time" id="currentTime"></div>
+            </div>
         </div>
         
-        <div class="user-count">
-            <span id="sessionInfo">会话ID: 加载中...</span>
-            <button class="clear-btn" id="clearBtn">清除消息</button>
+        <div class="user-count" id="userCount">
+            正在连接...
         </div>
         
         <div class="chat-input-area">
-            <input type="text" class="message-input" id="messageInput" placeholder="输入消息...">
-            <button class="send-button" id="sendButton">↑</button>
+            <input type="text" class="message-input" id="messageInput" placeholder="输入消息..." disabled>
+            <button class="send-button" id="sendButton" disabled>↑</button>
         </div>
     </div>
 
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // 初始化Firebase
+            const firebaseConfig = {
+                apiKey: "YOUR_API_KEY",
+                authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+                databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+                projectId: "YOUR_PROJECT_ID",
+                storageBucket: "YOUR_PROJECT_ID.appspot.com",
+                messagingSenderId: "YOUR_SENDER_ID",
+                appId: "YOUR_APP_ID"
+            };
+            
+            // 初始化Firebase
+            firebase.initializeApp(firebaseConfig);
+            const database = firebase.database();
+            
+            // DOM元素
             const chatMessages = document.getElementById('chatMessages');
             const messageInput = document.getElementById('messageInput');
             const sendButton = document.getElementById('sendButton');
-            const sessionInfo = document.getElementById('sessionInfo');
-            const clearBtn = document.getElementById('clearBtn');
+            const userCount = document.getElementById('userCount');
             
-            // 生成会话ID - 页面关闭后重新生成
-            let sessionId = sessionStorage.getItem('chatSessionId');
-            if (!sessionId) {
-                sessionId = 'session_' + Math.random().toString(36).substr(2, 9);
-                sessionStorage.setItem('chatSessionId', sessionId);
-            }
-            
-            // 生成用户ID - 同一会话中保持不变
-            let userId = sessionStorage.getItem('chatUserId');
-            if (!userId) {
-                userId = 'user_' + Math.random().toString(36).substr(2, 9);
-                sessionStorage.setItem('chatUserId', userId);
-            }
-            
-            let userName = '用户' + Math.floor(Math.random() * 1000);
-            sessionInfo.textContent = `会话ID: ${sessionId.substr(0, 10)}...`;
-            
-            // 初始化消息
-            function initializeMessages() {
-                // 从sessionStorage加载消息
-                let messages = JSON.parse(sessionStorage.getItem('chatMessages') || '[]');
-                updateChatMessages(messages);
-            }
-            
-            // 更新聊天消息显示
-            function updateChatMessages(messages) {
-                chatMessages.innerHTML = '';
-                
-                if (messages.length === 0) {
-                    // 添加欢迎消息
-                    const welcomeMsg = document.createElement('div');
-                    welcomeMsg.className = 'message received';
-                    welcomeMsg.innerHTML = `
-                        <div class="message-sender">系统</div>
-                        欢迎来到一次性消息聊天室！所有消息在页面关闭后将自动清除。
-                        <div class="message-time">${getCurrentTime()}</div>
-                    `;
-                    chatMessages.appendChild(welcomeMsg);
-                } else {
-                    // 显示所有消息
-                    messages.forEach(msg => {
-                        const messageElement = document.createElement('div');
-                        const isOwnMessage = msg.userId === userId;
-                        messageElement.className = `message ${isOwnMessage ? 'sent' : 'received'}`;
-                        
-                        messageElement.innerHTML = `
-                            <div class="message-sender ${isOwnMessage ? 'sender-you' : ''}">
-                                ${isOwnMessage ? '你' : msg.sender}
-                            </div>
-                            ${msg.text}
-                            <div class="message-time">${msg.time}</div>
-                        `;
-                        
-                        chatMessages.appendChild(messageElement);
-                    });
-                }
-                
-                // 滚动到底部
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }
-            
-            // 发送消息函数
-            function sendMessage() {
-                const messageText = messageInput.value.trim();
-                if (messageText === '') return;
-                
-                // 获取当前消息列表
-                let messages = JSON.parse(sessionStorage.getItem('chatMessages') || '[]');
-                
-                // 添加新消息
-                messages.push({
-                    userId: userId,
-                    sender: userName,
-                    text: messageText,
-                    time: getCurrentTime(),
-                    timestamp: Date.now()
-                });
-                
-                // 保存到sessionStorage
-                sessionStorage.setItem('chatMessages', JSON.stringify(messages));
-                
-                // 清空输入框
-                messageInput.value = '';
-                
-                // 禁用发送按钮
-                sendButton.disabled = true;
-                
-                // 更新显示
-                updateChatMessages(messages);
-                
-                // 模拟多标签页同步（实际中需要服务端支持）
-                simulateMultiTabSync();
-            }
-            
-            // 模拟多标签页同步
-            function simulateMultiTabSync() {
-                // 在真实环境中，这里应该使用WebSocket或Firebase实现多设备同步
-                // 这里我们只是模拟效果
-                if (Math.random() > 0.7) { // 30%的概率模拟收到回复
-                    setTimeout(() => {
-                        let messages = JSON.parse(sessionStorage.getItem('chatMessages') || '[]');
-                        
-                        const replies = [
-                            "收到你的消息了！",
-                            "这个聊天室设计得不错",
-                            "页面关闭后消息真的会清除吗？",
-                            "我在另一个设备上也能看到这条消息吗？",
-                            "这个UI设计很现代"
-                        ];
-                        
-                        const randomReply = replies[Math.floor(Math.random() * replies.length)];
-                        
-                        messages.push({
-                            userId: 'simulated_user',
-                            sender: '模拟用户',
-                            text: randomReply,
-                            time: getCurrentTime(),
-                            timestamp: Date.now()
-                        });
-                        
-                        sessionStorage.setItem('chatMessages', JSON.stringify(messages));
-                        updateChatMessages(messages);
-                    }, 1000 + Math.random() * 2000);
-                }
-            }
+            // 用户信息
+            const userId = 'user_' + Math.random().toString(36).substr(2, 9);
+            const userName = '用户' + Math.floor(Math.random() * 1000);
+            let onlineUsers = 0;
             
             // 获取当前时间
             function getCurrentTime() {
@@ -439,57 +244,109 @@
                 return `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
             }
             
-            // 清除所有消息
-            function clearMessages() {
-                if (confirm('确定要清除所有消息吗？此操作不可撤销。')) {
-                    sessionStorage.removeItem('chatMessages');
-                    initializeMessages();
-                }
+            // 添加系统消息
+            function addSystemMessage(text) {
+                const messageElement = document.createElement('div');
+                messageElement.className = 'message received';
+                messageElement.innerHTML = `
+                    <div class="message-sender">系统</div>
+                    ${text}
+                    <div class="message-time">${getCurrentTime()}</div>
+                `;
+                chatMessages.appendChild(messageElement);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
             }
             
-            // 发送按钮点击事件
-            sendButton.addEventListener('click', sendMessage);
+            // 添加用户消息
+            function addUserMessage(sender, text, isOwn = false) {
+                const messageElement = document.createElement('div');
+                messageElement.className = `message ${isOwn ? 'sent' : 'received'}`;
+                messageElement.innerHTML = `
+                    <div class="message-sender">${sender}</div>
+                    ${text}
+                    <div class="message-time">${getCurrentTime()}</div>
+                `;
+                chatMessages.appendChild(messageElement);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
             
-            // 输入框回车事件
-            messageInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    sendMessage();
-                }
-            });
-            
-            // 输入框输入事件（启用/禁用发送按钮）
-            messageInput.addEventListener('input', function() {
-                sendButton.disabled = this.value.trim() === '';
-            });
-            
-            // 清除按钮事件
-            clearBtn.addEventListener('click', clearMessages);
-            
-            // 初始禁用发送按钮
-            sendButton.disabled = true;
-            
-            // 自动聚焦到输入框
-            messageInput.focus();
-            
-            // 初始化消息
-            initializeMessages();
-            
-            // 添加一些示例消息
-            setTimeout(() => {
-                let messages = JSON.parse(sessionStorage.getItem('chatMessages') || '[]');
-                if (messages.length === 0) {
-                    messages.push({
-                        userId: 'system',
-                        sender: '系统',
-                        text: '试试发送一条消息，然后关闭页面再重新打开，看看消息是否被清除了。',
-                        time: getCurrentTime(),
-                        timestamp: Date.now()
-                    });
+            // 初始化聊天
+            function initializeChat() {
+                // 监听消息变化
+                database.ref('messages').on('value', (snapshot) => {
+                    const messages = snapshot.val() || {};
+                    chatMessages.innerHTML = '';
                     
-                    sessionStorage.setItem('chatMessages', JSON.stringify(messages));
-                    updateChatMessages(messages);
-                }
-            }, 500);
+                    // 添加系统欢迎消息
+                    addSystemMessage('已连接到实时聊天服务器');
+                    
+                    // 添加所有消息
+                    Object.values(messages).forEach(msg => {
+                        addUserMessage(
+                            msg.sender, 
+                            msg.text, 
+                            msg.userId === userId
+                        );
+                    });
+                });
+                
+                // 监听在线用户变化
+                database.ref('users').on('value', (snapshot) => {
+                    const users = snapshot.val() || {};
+                    onlineUsers = Object.keys(users).length;
+                    userCount.textContent = `在线用户: ${onlineUsers}`;
+                });
+                
+                // 添加当前用户到在线列表
+                database.ref('users/' + userId).set({
+                    name: userName,
+                    lastActive: firebase.database.ServerValue.TIMESTAMP
+                });
+                
+                // 设置页面关闭时的清理
+                window.addEventListener('beforeunload', function() {
+                    database.ref('users/' + userId).remove();
+                });
+                
+                // 启用输入框和发送按钮
+                messageInput.disabled = false;
+                sendButton.disabled = true;
+                messageInput.focus();
+            }
+            
+            // 发送消息
+            function sendMessage() {
+                const messageText = messageInput.value.trim();
+                if (messageText === '') return;
+                
+                // 生成消息ID
+                const messageId = 'msg_' + Date.now();
+                
+                // 保存消息到Firebase
+                database.ref('messages/' + messageId).set({
+                    userId: userId,
+                    sender: userName,
+                    text: messageText,
+                    time: getCurrentTime(),
+                    timestamp: Date.now()
+                });
+                
+                // 清空输入框
+                messageInput.value = '';
+                sendButton.disabled = true;
+            }
+            
+            // 事件监听
+            sendButton.addEventListener('click', sendMessage);
+            messageInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') sendMessage();
+            });
+            messageInput.addEventListener('input', () => {
+                sendButton.disabled = messageInput.value.trim() === '';
+            });
+            
+            // 初始化聊天
+            initializeChat();
         });
     </script>
 </body>
