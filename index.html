@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>多设备实时聊天</title>
+    <title>Supabase实时聊天</title>
     <style>
         * {
             margin: 0;
@@ -179,19 +179,19 @@
     <div class="chat-container">
         <div class="chat-header">
             <div>
-                <div class="chat-title">多设备实时聊天</div>
-                <div class="chat-subtitle">真正的跨设备通信</div>
+                <div class="chat-title">Supabase实时聊天</div>
+                <div class="chat-subtitle">多设备实时通信</div>
             </div>
         </div>
         
         <div class="info-box">
-            💡 这是一个真正的多设备实时聊天应用。使用Firebase实时数据库，所有消息将实时同步到所有设备。
+            💡 这是一个基于Supabase的实时聊天应用，所有消息将实时同步到所有设备。
         </div>
         
         <div class="chat-messages" id="chatMessages">
             <div class="message received">
                 <div class="message-sender">系统</div>
-                正在连接到实时聊天服务器...
+                正在连接到Supabase实时服务器...
                 <div class="message-time" id="currentTime"></div>
             </div>
         </div>
@@ -206,26 +206,15 @@
         </div>
     </div>
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // 初始化Firebase
-            const firebaseConfig = {
-                apiKey: "YOUR_API_KEY",
-                authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-                databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
-                projectId: "YOUR_PROJECT_ID",
-                storageBucket: "YOUR_PROJECT_ID.appspot.com",
-                messagingSenderId: "YOUR_SENDER_ID",
-                appId: "YOUR_APP_ID"
-            };
-            
-            // 初始化Firebase
-            firebase.initializeApp(firebaseConfig);
-            const database = firebase.database();
+            // 初始化Supabase客户端
+            const supabaseUrl = 'YOUR_SUPABASE_URL';
+            const supabaseKey = 'YOUR_SUPABASE_KEY';
+            const supabase = supabase.createClient(supabaseUrl, supabaseKey);
             
             // DOM元素
             const chatMessages = document.getElementById('chatMessages');
@@ -271,42 +260,44 @@
             }
             
             // 初始化聊天
-            function initializeChat() {
-                // 监听消息变化
-                database.ref('messages').on('value', (snapshot) => {
-                    const messages = snapshot.val() || {};
+            async function initializeChat() {
+                // 加载历史消息
+                const { data: messages, error } = await supabase
+                    .from('messages')
+                    .select('*')
+                    .order('created_at', { ascending: true });
+                
+                if (!error && messages) {
                     chatMessages.innerHTML = '';
+                    addSystemMessage('已连接到Supabase实时服务器');
                     
-                    // 添加系统欢迎消息
-                    addSystemMessage('已连接到实时聊天服务器');
-                    
-                    // 添加所有消息
-                    Object.values(messages).forEach(msg => {
+                    messages.forEach(msg => {
                         addUserMessage(
                             msg.sender, 
                             msg.text, 
-                            msg.userId === userId
+                            msg.user_id === userId
                         );
                     });
-                });
+                }
                 
-                // 监听在线用户变化
-                database.ref('users').on('value', (snapshot) => {
-                    const users = snapshot.val() || {};
-                    onlineUsers = Object.keys(users).length;
-                    userCount.textContent = `在线用户: ${onlineUsers}`;
-                });
+                // 设置实时监听
+                const subscription = supabase
+                    .channel('messages')
+                    .on(
+                        'postgres_changes',
+                        { event: 'INSERT', schema: 'public', table: 'messages' },
+                        (payload) => {
+                            addUserMessage(
+                                payload.new.sender,
+                                payload.new.text,
+                                payload.new.user_id === userId
+                            );
+                        }
+                    )
+                    .subscribe();
                 
-                // 添加当前用户到在线列表
-                database.ref('users/' + userId).set({
-                    name: userName,
-                    lastActive: firebase.database.ServerValue.TIMESTAMP
-                });
-                
-                // 设置页面关闭时的清理
-                window.addEventListener('beforeunload', function() {
-                    database.ref('users/' + userId).remove();
-                });
+                // 监听在线用户
+                // 注意：Supabase实时功能需要额外设置在线用户表
                 
                 // 启用输入框和发送按钮
                 messageInput.disabled = false;
@@ -315,25 +306,26 @@
             }
             
             // 发送消息
-            function sendMessage() {
+            async function sendMessage() {
                 const messageText = messageInput.value.trim();
                 if (messageText === '') return;
                 
-                // 生成消息ID
-                const messageId = 'msg_' + Date.now();
+                const { error } = await supabase
+                    .from('messages')
+                    .insert([
+                        { 
+                            user_id: userId,
+                            sender: userName,
+                            text: messageText
+                        }
+                    ]);
                 
-                // 保存消息到Firebase
-                database.ref('messages/' + messageId).set({
-                    userId: userId,
-                    sender: userName,
-                    text: messageText,
-                    time: getCurrentTime(),
-                    timestamp: Date.now()
-                });
-                
-                // 清空输入框
-                messageInput.value = '';
-                sendButton.disabled = true;
+                if (!error) {
+                    messageInput.value = '';
+                    sendButton.disabled = true;
+                } else {
+                    addSystemMessage('发送消息失败: ' + error.message);
+                }
             }
             
             // 事件监听
