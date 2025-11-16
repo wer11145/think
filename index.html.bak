@@ -569,10 +569,6 @@
             resizeTarget = null;
             resizeType = '';
         }
-        // 打开外部链接函数（补充位置）
-function openExternalLink(url) {
-    window.open(url, '_blank', 'noopener noreferrer');
-}
     </script>
 </body>
 </html>
