@@ -275,19 +275,46 @@
                 
     
 <button class="option-btn" onclick="openExternalLink('https://roar.iiilab.com/')">兽音译者</button>
-        <button class="option-btn">2</button>
-        <button class="option-btn">3</button>
-        <button class="option-btn">4</button>
-        <button class="option-btn">5</button>
-        <button class="option-btn">6</button>
-        <button class="option-btn">7</button>
-    
+<!-- 为第二个按钮添加点击事件，打开图片弹窗 -->
+<button class="option-btn" onclick="showImagePopup()">2</button>
+<button class="option-btn">3</button>
+<button class="option-btn">4</button>
+<button class="option-btn">5</button>
+<button class="option-btn">6</button>
+<button class="option-btn">7</button>
 
                 </div>
             </div>
         </div>
     </div>
-
+<!-- 图片弹窗（默认隐藏） -->
+<div class="main-popup-detail" id="imagePopup" style="opacity: 0; visibility: hidden;">
+    <div class="main-popup-panel" style="left: 50%; top: 50%; transform: translate(-50%, -50%); width: 400px; height: 300px;">
+        <!-- 弹窗缩放热区（复用主弹窗样式） -->
+        <div class="window-resize-edge left" onmousedown="startResize(event, this.parentElement, 'left')" ontouchstart="startResizeTouch(event, this.parentElement, 'left')"></div>
+        <div class="window-resize-edge right" onmousedown="startResize(event, this.parentElement, 'right')" ontouchstart="startResizeTouch(event, this.parentElement, 'right')"></div>
+        <div class="window-resize-edge top" onmousedown="startResize(event, this.parentElement, 'top')" ontouchstart="startResizeTouch(event, this.parentElement, 'top')"></div>
+        <div class="window-resize-edge bottom" onmousedown="startResize(event, this.parentElement, 'bottom')" ontouchstart="startResizeTouch(event, this.parentElement, 'bottom')"></div>
+        <div class="window-resize-edge corner-tl" onmousedown="startResize(event, this.parentElement, 'corner-tl')" ontouchstart="startResizeTouch(event, this.parentElement, 'corner-tl')"></div>
+        <div class="window-resize-edge corner-tr" onmousedown="startResize(event, this.parentElement, 'corner-tr')" ontouchstart="startResizeTouch(event, this.parentElement, 'corner-tr')"></div>
+        <div class="window-resize-edge corner-bl" onmousedown="startResize(event, this.parentElement, 'corner-bl')" ontouchstart="startResizeTouch(event, this.parentElement, 'corner-bl')"></div>
+        <div class="window-resize-edge corner-br" onmousedown="startResize(event, this.parentElement, 'corner-br')" ontouchstart="startResizeTouch(event, this.parentElement, 'corner-br')"></div>
+        
+        <!-- 弹窗标题栏 -->
+        <div class="panel-header" onmousedown="startDrag(event, this.parentElement)" ontouchstart="startDragTouch(event, this.parentElement)">
+            <div class="panel-title">图片查看</div>
+            <div class="close-btn" onclick="hidePanel(document.getElementById('imagePopup'))"></div>
+        </div>
+        
+        <!-- 弹窗内容（包含指定图片） -->
+        <div class="panel-content-wrapper">
+            <div class="panel-content" style="padding: 0;">
+                <!-- 图片自适应弹窗大小，保持比例 -->
+                <img src="ic001.png" alt="图片展示" style="width: 100%; height: 100%; object-fit: contain;">
+            </div>
+        </div>
+    </div>
+</div>
     <script>
         // 基础交互变量
         let currentZIndex = 2001;
@@ -333,14 +360,16 @@
             document.addEventListener('touchcancel', stopResize);
         }
         
-        // 关闭弹窗
-        function hidePanel(panelElement) {
-            panelElement.style.opacity = 0;
-            panelElement.style.visibility = 'hidden';
-            setTimeout(() => {
-                panelElement.remove();
-            }, 300);
-        }
+// 关闭弹窗（修复后：仅隐藏，不删除元素）
+function hidePanel(panelElement) {
+    panelElement.style.opacity = 0;
+    panelElement.style.visibility = 'hidden';
+    // 删掉下面这行代码：避免永久删除弹窗元素
+    // setTimeout(() => {
+    //     panelElement.remove();
+    // }, 300);
+}
+
         
         // 鼠标拖动开始
         function startDrag(event, target) {
@@ -572,6 +601,20 @@
         // 打开外部链接函数（补充位置）
 function openExternalLink(url) {
     window.open(url, '_blank', 'noopener noreferrer');
+}
+// 打开外部链接函数（原函数保留）
+function openExternalLink(url) {
+    window.open(url, '_blank', 'noopener noreferrer');
+}
+
+// 新增：显示图片弹窗函数
+function showImagePopup() {
+    const imagePopup = document.getElementById('imagePopup');
+    // 显示弹窗（复用主弹窗显示逻辑）
+    imagePopup.style.opacity = 1;
+    imagePopup.style.visibility = 'visible';
+    // 提升弹窗层级，避免被遮挡
+    imagePopup.style.zIndex = currentZIndex++;
 }
     </script>
 </body>
